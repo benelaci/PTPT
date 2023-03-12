@@ -1,6 +1,6 @@
 # PTPT • Password Typing Practice Tool
 
-![PTPT - Password typing practice tool](https://i.ibb.co/PYVQL6T/PTPT-Password-Typing-Practice-Tool.png)
+![PTPT - Password typing practice tool](https://i.ibb.co/YQG0d4F/PTPT-Password-Typing-Practice-Tool.png)
 
 # Description
 

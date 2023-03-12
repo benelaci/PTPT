@@ -134,11 +134,12 @@ td:nth-child(-n + 2) {
 	gap: 2px;
 }
 .counter #of {
-	padding-right: 2px; /* fixing "/" karakter margin */
+	padding-right: 1px; /* fixing "/" karakter margin */
 	font-weight: 500;
 }
-.counter #of.ten {
-	padding-right: 0; /* 10-19 total needs less distance  */
+.counter #of.ten { /* 10-19 total needs less distance */
+	padding-right: 0;
+	margin-right: -3px;
 }
 
 

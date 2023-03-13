@@ -1,6 +1,6 @@
 # PTPT • Password Typing Practice Tool
 
-![PTPT - Password typing practice tool](https://i.ibb.co/J3MWLcP/PTPT-Password-Typing-Practice-Tool.png)
+![PTPT - Password typing practice tool](https://i.ibb.co/LrqsxB9/PTPT-Password-Typing-Practice-Tool.png)
 
 # Description
 
@@ -19,8 +19,8 @@ The speed of each entry is measured, and correct entries are distinguished from 
 # Things to know
 
 - The ✅ marks indicate the passwords that were entered correctly. You can set the correct password by clicking the empty square.
-- You can erase the input by pressing ESC
-- You cannot copy from the screen because pressing a key focuses the input
+- You can erase the input by pressing Esc
+- You cannot copy from the screen using Ctrl+C because pressing a key focuses the input. Use mouse instead.
 
 # Assurance
 

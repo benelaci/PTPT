@@ -195,6 +195,7 @@ function hl(hlid) {
 
 function keydown(event) {
 	var key = event.which;
+	inputEl.focus();
 
 	if (
 		// if started typing in empty field

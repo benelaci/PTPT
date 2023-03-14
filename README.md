@@ -20,7 +20,7 @@ The speed of each entry is measured, and correct entries are distinguished from 
 
 - The ✅ marks indicate the passwords that were entered correctly. You can set the correct password by clicking the empty square.
 - You can erase the input by pressing Esc.
-- If you want to copy from the screen for whatever reason, you cannot do it with Ctrl+C, because pressing a key focuses the input. Use the mouse instead.
+- If you want to copy from the screen for whatever reason, you cannot do it with Ctrl+C / &#8984;C, because pressing a key focuses the input. Use the mouse instead.
 
 # Assurance
 
@@ -28,6 +28,6 @@ This tool is safe. It runs on your local computer, does not store passwords in a
 
 ----
 
-# Semi-ralated Stuff
+# Semi-ralated stuff
 
 An interesting [video](https://youtu.be/7U-RbOKanYs) about different password cracking methods and which passwords are not secure.

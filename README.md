@@ -1,12 +1,12 @@
 # PTPT • Password Typing Practice Tool
 
-![PTPT - Password typing practice tool](https://i.ibb.co/Fsq00PQ/PTPT-Password-Typing-Practice-Tool.png)
+![PTPT - Password typing practice tool](https://i.ibb.co/cxcYRJR/PTPT-Password-Typing-Practice-Tool.png)
 
 # Description
 
 If you use a password manager and hate entering its password every few hours, spend some minutes with this tool now and then. The typing speed will improve in a relatively fun way, and the pain of unlocking the password manager will ease each time. I've done some practicing, and now when it comes to fuck around with entering again, I'm in an ‘oh my god, this is fuckin amazing’ state.
 
-The speed of each entry is measured, and correct entries are distinguished from false ones.
+The speed of each entry is measured and scored, and correct entries are distinguished from false ones. Bar colors are in general indicator language, with green meaning fully comfortable typing speed, cyan/blue/purple meaning over the top and extreme convenience. It's worth aiming for ultra-fast speed, because in live action you'll type somewhat slower than while practicing.
 
 # Installation
 
@@ -22,9 +22,17 @@ The speed of each entry is measured, and correct entries are distinguished from 
 - You can erase the input by pressing Esc.
 - If you want to copy from the screen for whatever reason, you cannot do it with Ctrl+C / &#8984;C, because pressing a key focuses the input. Use the mouse instead.
 
+# Practice advice
+
+It's better to practice by typing slowly but accurately. This way your hand can learn the movements properly, and your speed will slowly increase. If you work on banging out the password as fast as possible, you'll keep screwing up the critical parts.
+
 # Assurance
 
 This tool is safe. It runs on your local computer, does not store passwords in any form, does not communicate online, and the source code is disclosed and human readable.
+
+# Author / contact
+
+László Bene · benelaszlo![|](https://i.ibb.co/7WLcqb3/ch1.gif)tutanota![|](https://i.ibb.co/R45zkLX/ch2.gif)com
 
 ----
 

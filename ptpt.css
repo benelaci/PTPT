@@ -57,6 +57,12 @@ input {
 	color: #000;
 	font-weight: 500;
 	outline: none;
+	transition: all 1s;
+}
+input.error {
+	background: #f25246;
+	border-color: #774244;
+	transition: all 0s;
 }
 .prev-input {
 	padding-top: 3px;
@@ -78,25 +84,33 @@ td {
  	padding: 1px 1px 15px; /* unfortunately I forgot that td has a default padding, and I built the whole thing like that */
 }
 
-.sec, .bar {
-	margin-left: 20px;
-	padding-top: 3px;
-}
 .sec {
+	padding-top: 3px;
 	padding-left: 20px;
 	width: 55px;
 	font: 400 16px 'DIN';
 	letter-spacing: .25px;
 }
 .bar {
+	padding-top: 2px;
 	max-width: 1px;
 	overflow: hidden;
 }
 .bar div {
-	height: 13px;
+	height: 15px;
+	padding: 3px 3px 0 0;
+	box-sizing: border-box;
+	text-align: right;
+}
+.bar div span {
+	font: 9.49px/1em 'Verdana';
+	color: #262729;
 }
 .bar:not(.checked) div {
-	background: #444;
+	background: #434548 !important;
+}
+.bar:not(.checked) div span {
+	display: none;
 }
 
 td:nth-child(-n + 2) {
@@ -131,15 +145,18 @@ td:nth-child(-n + 2) {
 	bottom: 11px;
 	right: 11px;
 	font: 700 42px/.8em 'DIN';
-	color: #959ba1;
+	color: #979ca1;
 	display: flex;
 	gap: 2px;
 }
-.counter #of {
+#counter-correct {
+	color: #fff;
+}
+#counter-slash {
 	padding-right: 1px; /* fixing "/" karakter margin */
 	font-weight: 400;
 }
-.counter #of.ten { /* 10-19 total needs less distance */
+#counter-slash.teen { /* 10-19 total needs less distance */
 	padding-right: 0;
 	margin-right: -3px;
 }

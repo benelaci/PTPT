@@ -7,13 +7,13 @@
 	<script src="ptpt.js"></script>
 </head>
 
-<body onload="init(); addInput()" onkeydown="keydown(event)">
+<body onload="init(); addInput()" onkeydown="keyDown(event)" onkeyup="keyUp(event)">
 
 	<table></table>
 
 	<div class="counter">
 		<span id="counter-correct">0</span>
-		<span id="of">/</span>
+		<span id="counter-slash">/</span>
 		<span id="counter-total">0</span>
 	</div>
 

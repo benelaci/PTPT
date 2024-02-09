@@ -40,6 +40,6 @@ Laci Bene · laci.bene![|](https://i.ibb.co/7WLcqb3/ch1.gif)mail![|](https://i.i
 
 ----
 
-## Semi-ralated stuff
+## Semi-related stuff
 
 An interesting [video](https://youtu.be/7U-RbOKanYs) about different password cracking methods and which passwords are not secure.

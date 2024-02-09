@@ -30,9 +30,13 @@ It's better to practice by typing slowly but accurately. This way your hand can 
 
 This tool is safe. It runs on your local computer, does not store passwords in any form, does not communicate online, and the source code is disclosed and human readable.
 
+## Online location
+
+**[blapp.hu/ptpt](https://blapp.hu/ptpt)**
+
 ## Author / contact
 
-László Bene · benelaszlo![|](https://i.ibb.co/7WLcqb3/ch1.gif)tutanota![|](https://i.ibb.co/R45zkLX/ch2.gif)com
+Laci Bene · laci.bene![|](https://i.ibb.co/7WLcqb3/ch1.gif)maiI![|](https://i.ibb.co/R45zkLX/ch2.gif)ee
 
 ----
 

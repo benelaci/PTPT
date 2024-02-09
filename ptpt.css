@@ -44,7 +44,7 @@ table {
 	width: calc( 100% - var(--logo-resultingWidth) + var(--table-shiftToLeft) );
 	border-collapse: collapse;
 }
-.prev-input, input {
+.entry, input {
 	font: 16.35px 'PF DIN Mono';
 }
 input {
@@ -59,26 +59,48 @@ input {
 	outline: none;
 	transition: all 1s;
 }
-input.error {
+/*input.invalid {
 	background: #f25246;
 	border-color: #774244;
 	transition: all 0s;
-}
-.prev-input {
+}*/
+.entry {
 	padding-top: 3px;
 	padding-left: 10px;
 	padding-right: 2px;
 	white-space: nowrap;
 	font-weight: 400;
 }
-/*.prev-input:hover {
+/*.entry:hover {
 	background: #3e343c;
 	cursor: pointer;
 }*/
-.prev-input .upper {color: #ffd800}
-.prev-input .number {color: #66a8ff}
-.prev-input .symbol {color: #ff6f60}
-.prev-input .extra {color: #f7f}
+.entry .upper {color: #fddc1f}
+.entry .number {color: #66a8ff}
+.entry .symbol {color: #f93}
+.entry .extra {color: #f7f}
+.entry .error {background: #911}
+.entry .slip {background: #3b3d40}
+.entry .error.slip {background: #ae2728}
+
+.entry .error.swap {
+	display: inline-block;
+	position: relative;
+	z-index: 1;
+	border: 2px #d22;
+	border-top-style: solid;
+	border-bottom-style: solid;
+	margin-top: -2px;
+	margin-bottom: -2px;
+}
+.entry .error.swap.part-1 {
+	border-left-style: solid;
+	margin-left: -2px;
+}
+.entry .error.swap.part-2 {
+	border-right-style: solid;
+	margin-right: -2px;
+}
 
 td {
  	padding: 1px 1px 15px; /* unfortunately I forgot that td has a default padding, and I built the whole thing like that */
@@ -101,16 +123,12 @@ td {
 	padding: 3px 3px 0 0;
 	box-sizing: border-box;
 	text-align: right;
-}
-.bar div span {
 	font: 9.49px/1em 'Verdana';
 	color: #262729;
 }
-.bar:not(.checked) div {
+tr:not(.correct) .bar div {
 	background: #434548 !important;
-}
-.bar:not(.checked) div span {
-	display: none;
+	color: transparent;
 }
 
 td:nth-child(-n + 2) {
@@ -126,15 +144,15 @@ td:nth-child(-n + 2) {
 	filter: grayscale(0);
 	cursor: pointer;
 }
-.hl:not(.checked)::after {
+tr:not(.correct) .hl::after {
 	content: '\2B1C';
 	filter: sepia(1) saturate(3.5) hue-rotate(177deg) brightness(.39);
 }
-.hl.checked::after {
+tr.correct .hl::after {
 	content: '\2705';
 	text-shadow: 0 0 9px #16c60c;
 }
-.hl:not(.checked):hover::after {
+tr:not(.correct) .hl:hover::after {
 	filter: sepia(1) saturate(7) hue-rotate(51deg) brightness(.5);
 	cursor: pointer;
 }
@@ -208,7 +226,7 @@ td:nth-child(-n + 2) {
 
 .subtitle {
 	margin-top: -1px;
-	font: 9px/12px "Verdana";
+	font: 9px/12px Tahoma;
 	letter-spacing: .5px;
 	width: 50px;
 	color: #84888e;

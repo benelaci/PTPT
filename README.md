@@ -1,6 +1,6 @@
 # PTPT • Password Typing Practice Tool
 
-![PTPT - Password Typing Practice Tool](https://i.ibb.co/zGZ42sW/PTPT-Password-Typing-Practice-Tool.png)
+![PTPT - Password Typing Practice Tool](https://i.ibb.co/SPqj0wn/PTPT-Password-Typing-Practice-Tool.png)
 
 ## Description
 
@@ -12,7 +12,7 @@ The speed of each entry is measured and scored, and correct entries are distingu
 
 1. **Click** [`HERE`](https://github.com/benelaci/PTPT/archive/refs/heads/main.zip) to download all files in zip.
 2. Put the zip content into the desired folder.
-3. Open `ptpt.html` in a browser.
+3. Open `index.html` in a browser.
 
 (The app is plain html/javascript, so no web server is needed.)
 

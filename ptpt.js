@@ -1,14 +1,8 @@
 const
-	cell_debug = 0,
-	keyPress_debug = 0,
-	keyCount_debug = 0,
-	hue_debug = 0,
-
-	// Hue between 0 and 300 is reflected on score1, but hue up to 340 is allowed, and score1000 = 1000 is at hue 340 as well.
+	// Hue between 0 and 300 is reflected on scoreSimple, but hue up to 340 is allowed
 	// If the upper limit needs to be changed in the future, 340 can be increased, but the ratio value fixed at 300 must not be changed.
-	// Increasing the 340 upper limit will change scoring (score1000).
 	ratioAt300  = 80, 
-	ratioAt0 = 160,
+	ratioAt0 = 240,
 	min_boxSize = 12;
 
 var
@@ -18,13 +12,15 @@ var
 	boxSize = min_boxSize,
 	hlid_selected,
 	table, row, inputCell,
+	refEntry,
+	lastEntryRow,
 	counter;
 
 function init() {
 	table = document.getElementsByTagName('table')[0];
 	counter = {
-		'correct': document.getElementById('counter-correct'),
-		'total': document.getElementById('counter-total')
+		'Correct': document.getElementById('counter-correct'),
+		'Total': document.getElementById('counter-total')
 	}
 }
 
@@ -79,6 +75,8 @@ function keyDown(event) {
 				modifierKey = key;
 				keyCount ++;
 				charKeyCount[length] ++;
+				// revoke keydown before alt+tab
+				zeroIfEmpty();
 			}
 		// typing (affects input value)
 		}else{
@@ -101,8 +99,8 @@ function keyDown(event) {
 					}
 				break;
 				case 8:
-						charKeyCount[length] = 0;
-						charKeyCount[length-1] = 0;
+					charKeyCount[length] = 0;
+					charKeyCount[length-1] = 0;
 					if (length == boxSize && boxSize > min_boxSize) {
 						boxSize = length-1;
 						inputCell.style.width = width();
@@ -112,123 +110,201 @@ function keyDown(event) {
 		}
 		if (key!=17) prev_keyDown = key; // 17 is the first part of AltGr
 	}
-
-	// DEBUG KEYDOWN
-	if (keyPress_debug) console.log("%cD: "+key, 'color: #4af');
 }
 
 function keyUp(event) {
 	var key = event.which;
+	// shift, alt
 	if ((key==16 || key==18) && key == prev_keyDown)
 		charKeyCount[inputEl.value.length] --;
 
 	modifierKey = null;
 
 	// avoid keyups after switching back to browster tab
-	if (!inputEl.value) charKeyCount = [0];
+	zeroIfEmpty();
+}
 
-	// DEBUG KEYUP
-	if (keyPress_debug) console.log("%cU: "+key, 'color: #d7f');
-	// DEBUG KEY COUNT
-	if (keyCount_debug) console.log('%c' + charKeyCount +' = '+ charKeyCount.reduce((partialSum, a) => partialSum + a, 0), 'color: #cb8');
+function zeroIfEmpty() {
+	if (inputEl && !inputEl.value) {
+		charKeyCount = [0];
+	}
+
 }
 
 function finishInput()
 {
 	var inputVal = document.getElementById('input').value;
-	if (inputVal.length < 8) {
-		input.className = 'error';
+	/*if (inputVal.length < 8) {
+		input.className = 'invalid';
 		setTimeout(function() {
 			input.className = '';
 		}, 9);
 		return;
-	}
+	}*/
 
 	const time = Date.now() - timeStart;
 	
-	var keyCount = charKeyCount.reduce((partialSum, a) => partialSum + a, 0);
-
+	// iteratively sum up the elements of the array.
+	var keyCount = charKeyCount.reduce((runningSum, current) => runningSum + current, 0); // 0 = runningSum initial value
 	keyCount ++; // enter
 	
-	const ratio = time / keyCount;
-	const score1 = 1 - (ratio - ratioAt300) / (ratioAt0 - ratioAt300); // 0..1
+	var ratio = time / keyCount;
+	if (ratio > ratioAt0) ratio = ratioAt0;
+	const scoreSimple = 1 - (ratio - ratioAt300) / (ratioAt0 - ratioAt300); // 0..1
 	// hue on an arithemtic sequence (sluggish)
-	const Ahue = 300 * score1;
+	const Ahue = 300 * scoreSimple;
 	// hue on a geometric sequence (coarse)
-	const Ghue = Math.pow(300, score1);
-	// balanced curve geometrically averaged by 2:1 (a:g)
-	var hue = Math.pow( Math.pow(Ahue, 2) * Math.pow(Ghue, 1), 1/3 );
+	const Ghue = Math.pow(300, scoreSimple);
+	// balanced curve geometrically averaged by 1:4 (A:G)
+	var hue = Math.pow( Math.pow(Ahue, 1) * Math.pow(Ghue, 4), 1/5 );
 
 	// trimming hue on overflow
 	if (hue<1) hue=0; else
 	if (hue>340) hue=340;
 
-	// rounding
-	const score1000 = Math.round(hue*1000/340);
+	// actual score 
+	const scoreActual = Math.round(hue*5/3); // 100 score per hue hotspot
+
+	// hue rounding
 	hue = Math.round(hue);
 	
 	// fixing colors
 	const lightness = convert('hue_lightness',hue);
 	const saturation = convert('hue_saturation',hue);
 
-	var barWidth = Math.round(time/10);
+	var barWidth = Math.round(time/17);
 
 	var sum=0; // id for highlight
-	var prevInput = '';
+	var entry='';
 	var cl; // css class of each character
+	var r=0; // index inside reference entry for proofing
+	const ignoreEntry = refEntry && inputVal.length <= refEntry.length-4; // if only a part of the password is being practiced, don't proof and don't count
 	for (var i=0; i<inputVal.length; i++)
 	{
 		var a = inputVal.charCodeAt(i);
 
-		sum += a*(i+1);
+		const sumComponent = Math.pow(a, 1+i);
+		sum += sumComponent;
+		if (i==inputVal.length-1) {
+			sum = Math.floor(sum % 100000);
+		}
 		
 		if (a>=97 && a<=122)
-			cl = '';
+			cl=[];
 		else if (a>=65 && a<=90)
-			cl = 'upper';
+			cl=['upper'];
 		else if (a>=48 && a<=57)
-			cl = 'number';
+			cl=['number'];
 		else if (a>=128)
-			cl = 'extra';
+			cl=['extra'];
 		else
-			cl = 'symbol';
+			cl=['symbol'];
 
-		prevInput += '<span class="'+cl+'">'+inputVal[i]+'</span>';
+		// PROOFING
+		if (
+			refEntry &&
+			inputVal.charAt(i) != refEntry.charAt(r) &&
+			!ignoreEntry
+			) {
+			cl.push('error');
+
+			// two adjacent characters swapped
+			var swap = null;
+			// first character of the swapped pair
+			if (
+				inputVal.charAt(i) == refEntry.charAt(r+1) &&
+				inputVal.charAt(i+1) == refEntry.charAt(r) &&
+				(refEntry.charAt(r) != refEntry.charAt(r+2) ||     //
+				 inputVal.charAt(i+2) == refEntry.charAt(r+2)) &&  // making sure it's not skipping, like "here"->"hre"
+				(inputVal.charAt(i) != inputVal.charAt(i+2) ||     //
+				 inputVal.charAt(i+2) == refEntry.charAt(r+2))     // making sure it's not false insert, like "turnip"->"turinip"
+			)
+				swap = 1;
+			// second character of the swapped pair
+			else if (
+				inputVal.charAt(i) == refEntry.charAt(r-1) &&
+				inputVal.charAt(i-1) == refEntry.charAt(r) &&
+				(refEntry.charAt(r-1) != refEntry.charAt(r+1) ||   //
+				 inputVal.charAt(i+1) == refEntry.charAt(r+1))     // making sure it's not skipping, like "here"->"hre"
+				// (and there is no case when there is false insert at the second character, because it breaks the possible swapping)
+			)
+				swap = 2;
+
+			if (swap) {
+				cl.push('swap part-'+swap);
+			}
+			else {
+				// a character skipped
+				if (
+					inputVal.charAt(i) == refEntry.charAt(r+1) &&
+					inputVal.charAt(i+1) == refEntry.charAt(r+2) // making sure it's not insert, like "turnip"->"turinip"
+				)
+					r++;
+				// a character falsely inserted
+				else if (
+					inputVal.charAt(i+1) &&
+					inputVal.charAt(i+1) == refEntry.charAt(r)
+				)
+					r--;
+			}
+		}
+		if (i!=r)
+			cl.push('slip');
+
+		// adding formatted character to entry
+		var classStr = cl.length>0 ? ' class="'+cl.join(' ')+'"' : '';
+		entry += '<span'+classStr+'>'+inputVal[i]+'</span>';
+
+		// if last character is missing, add an extra spaceholder to the entry
+		if (refEntry && i == inputVal.length-1 && inputVal.length == refEntry.length + i-r - 1)
+			entry += '<span class="error">&nbsp;</span>';
+
+		r++;
 	}
 
-	if (!hlid_selected)
-		hlid_selected = sum;
-	if (sum == hlid_selected) {
-		var hlStatus = ' checked';
-		var increase = true;
-	}else{
-		var hlStatus = '';
-		var increase = false;
-	}
-	if (increase) count('correct','+',1);
+	if (!ignoreEntry) {
+		if (!hlid_selected)
+			hlid_selected = sum;
+		if (sum == hlid_selected) {
+			var hlStatus = ' correct';
+			var increase = true;
+			if (refEntry != inputVal)
+				refEntry = inputVal;
+		}else{
+			var hlStatus = '';
+			var increase = false;
+		}
+		if (increase) count('Correct','+',1);
 
-	count('total','+',1);
+		count('Total','+',1);
+	}
 
 	row.remove();
+
 	row = table.insertRow(-1);
+	row.className = 'entry-row hlid-' + sum + hlStatus;
 	
 	var cell = row.insertCell(-1);
 	var icon = document.createElement('span');
 	icon.className = 'remove';
-	icon.addEventListener('click', function() {
-		count('total','-',1);
-		if (this.parentNode.nextSibling.children[0].className.substr(-7) == 'checked')
-			count('correct','-',1);
+	icon.addEventListener('click', function()
+	{
+		count('Total','-',1);
+		if (this.parentNode.parentNode.className.substr(-7) == 'correct')
+			count('Correct','-',1);
 		this.parentNode.parentNode.remove();
 		boxSize = min_boxSize;
 		inputCell.style.width = width();
 		inputEl.focus();
+
+		if (document.getElementsByClassName('correct').length == 0)
+			removeProofing();
 	});
 	cell.appendChild(icon);
 
 	cell = row.insertCell(-1);
 	icon = document.createElement('span');
-	icon.className = 'hl hl-' + sum + hlStatus;
+	icon.className = 'hl';
 	icon.addEventListener('click', function() {
 		hl(sum);
 		inputEl.focus();
@@ -236,20 +312,16 @@ function finishInput()
 	cell.appendChild(icon);
 	
 	cell = row.insertCell(-1);
-	cell.className = 'prev-input';
-	cell.innerHTML = prevInput;
+	cell.className = 'entry';
+	cell.innerHTML = entry;
 
 	cell = row.insertCell(-1);
 	cell.className = 'sec';
 	cell.innerHTML = time/1000;
 
 	cell = row.insertCell(-1);
-	cell.className = 'bar bar-' + sum + hlStatus;
-	var hueStr = hue_debug ? '<b>'+hue+'</b> | ' : '';
-	cell.innerHTML = '<div style="width: '+ barWidth +'px; background: hsl('+ hue +' '+ saturation +'% '+ lightness +'%)"><span>'+ hueStr + score1000 +'</span></div>';
-
-	if (cell_debug)
-		stressCells(row);
+	cell.className = 'bar';
+	cell.innerHTML = '<div style="width: '+ barWidth +'px; background: hsl('+ hue +' '+ saturation +'% '+ lightness +'%)">'+ scoreActual +'</div>';
 
 	addInput();
 }
@@ -276,33 +348,41 @@ function count(which, operation, amount) {
 }
 
 function hl(hlid) {
-	var first = true;
-	for (const which of ['hl','bar']) {
-		var coll = document.getElementsByClassName(which);
-		[].forEach.call(coll, function(el) {
-			el.classList.remove('checked');
-		});
-		coll = document.getElementsByClassName(which+'-'+hlid);
-		[].forEach.call(coll, function(el) {
-			el.className += ' checked';
-		});
-		if (first) {
-			count('correct','=',coll.length);
-			first = false;
-		}
-	}
+	if (hlid == hlid_selected) return;
+
+	var coll = document.querySelectorAll('tr.entry-row');
+	[].forEach.call(coll, function(el) {
+		el.classList.remove('correct');
+	});
+	coll = document.querySelectorAll('tr.hlid-'+hlid);
+	[].forEach.call(coll, function(el) {
+		el.className += ' correct';
+	});
+	count('Correct','=',coll.length);
 	
 	hlid_selected = hlid;
+	
+	removeProofing();
 }
 
-function stressCells(row) {
-	var cells = row.getElementsByTagName('td');
-	[].forEach.call(cells, function(el) {
-		var color = [];
-		for (var i=0; i<3; i++)
-			color.push(Math.round(Math.random()*128));
-			el.style.background = 'rgb('+color.join(' ')+')';
+function removeProofing() {
+	var coll1 = document.querySelectorAll('tr.entry-row');
+	[].forEach.call(coll1, function(el) {
+		var coll2 = el
+			.getElementsByClassName('entry')[0]
+			.querySelectorAll('.error,.slip');
+		var list = [];
+		[].forEach.call(coll2, function(el) {
+			// "error" className must be removed, but doing that here would affect the "error" className collection, so another list is needed
+			list.push(el);
+		});
+		for (const el of list) {
+			el.classList.remove('error');
+			el.classList.remove('slip');
+		}
 	});
+
+	refEntry = null;
 }
 
 function convert(conversions_key, x)
@@ -329,7 +409,6 @@ function convert(conversions_key, x)
 		}
 	} while (!y && i>=0);
 	
-	console.log(y);
 	return y;
 }
 
@@ -355,4 +434,3 @@ Object.entries(conversions).forEach(entry => {
 	var stringKeys = Object.keys(array); // get keys of array 
 	keys[key] = stringKeys.map(Number); // convert to integer
 });
-console.log(keys)

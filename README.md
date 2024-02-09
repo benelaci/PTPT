@@ -26,7 +26,7 @@ The speed of each entry is measured and scored, and correct entries are distingu
 
 It's better to practice by typing slowly but accurately. This way your hand can learn the movements properly, and your speed will slowly increase. If you work on banging out the password as fast as possible, you'll keep screwing up the critical parts.
 
-## Assurance
+## Security & Transparency
 
 This tool is safe. It runs on your local computer, does not store passwords in any form, does not communicate online, and the source code is disclosed and human readable.
 
@@ -34,9 +34,9 @@ This tool is safe. It runs on your local computer, does not store passwords in a
 
 **[blapp.hu/ptpt](https://blapp.hu/ptpt)**
 
-## Author / contact
+## Author / Contact
 
-Laci Bene · laci.bene![|](https://i.ibb.co/7WLcqb3/ch1.gif)maiI![|](https://i.ibb.co/R45zkLX/ch2.gif)ee
+Laci Bene · laci.bene![|](https://i.ibb.co/7WLcqb3/ch1.gif)mail![|](https://i.ibb.co/R45zkLX/ch2.gif)ee
 
 ----
 

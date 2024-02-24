@@ -59,11 +59,11 @@ input {
 	outline: none;
 	transition: all 1s;
 }
-/*input.invalid {
+input.invalid {
 	background: #f25246;
 	border-color: #774244;
 	transition: all 0s;
-}*/
+}
 .entry {
 	padding-top: 3px;
 	padding-left: 10px;
@@ -71,14 +71,11 @@ input {
 	white-space: nowrap;
 	font-weight: 400;
 }
-/*.entry:hover {
-	background: #3e343c;
-	cursor: pointer;
-}*/
+.entry span {white-space: pre}
 .entry .upper {color: #fddc1f}
 .entry .number {color: #66a8ff}
 .entry .symbol {color: #f93}
-.entry .extra {color: #f7f}
+.entry .extra {color: #f89}
 .entry .error {background: #911}
 .entry .slip {background: #3b3d40}
 .entry .error.slip {background: #ae2728}

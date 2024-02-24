@@ -57,8 +57,9 @@ function keyDown(event) {
 		typeof inputEl.selectionStart == "number" && inputEl.selectionStart == 0 && inputEl.selectionEnd == inputEl.value.length
 	) startInput();
 	
-	if (key==13) finishInput();
-	else if (
+	if (key==13) {
+		finishInput();
+	} else if (
 		// shift
 		key==16 ||
 		// alt gr (ctrl->alt)
@@ -134,13 +135,13 @@ function zeroIfEmpty() {
 function finishInput()
 {
 	var inputVal = document.getElementById('input').value;
-	/*if (inputVal.length < 8) {
+	if (inputVal.length < 2) {
 		input.className = 'invalid';
 		setTimeout(function() {
 			input.className = '';
 		}, 9);
 		return;
-	}*/
+	}
 
 	const time = Date.now() - timeStart;
 	
@@ -179,12 +180,20 @@ function finishInput()
 	var cl; // css class of each character
 	var r=0; // index inside reference entry for proofing
 	const ignoreEntry = refEntry && inputVal.length <= refEntry.length-4; // if only a part of the password is being practiced, don't proof and don't count
+
+	const minimum_exponent = 3;
+	const exponent_increase = .05;
+
 	for (var i=0; i<inputVal.length; i++)
 	{
 		var a = inputVal.charCodeAt(i);
-
-		const sumComponent = Math.pow(a, 1+i);
-		sum += sumComponent;
+		/*
+			FORMULA EXPLANATION: 
+			"minimum_exponent" ensures a fairly large number even if "i" is 0
+			"exponent_increase" moderates the brutal impact of exponentiality on "i"
+		*/
+		const sumItem = Math.pow(a, minimum_exponent + i * exponent_increase);
+		sum += sumItem;
 		if (i==inputVal.length-1) {
 			sum = Math.floor(sum % 100000);
 		}
@@ -251,13 +260,19 @@ function finishInput()
 		if (i!=r)
 			cl.push('slip');
 
-		// adding formatted character to entry
+		var c = inputVal[i];
+		// display spaces with middots
+		if (c==' ')
+			c = '&middot;';
+
+		// add formatted character to entry
 		var classStr = cl.length>0 ? ' class="'+cl.join(' ')+'"' : '';
-		entry += '<span'+classStr+'>'+inputVal[i]+'</span>';
+
+		entry += '<span'+classStr+'>'+c+'</span>';
 
 		// if last character is missing, add an extra spaceholder to the entry
 		if (refEntry && i == inputVal.length-1 && inputVal.length == refEntry.length + i-r - 1)
-			entry += '<span class="error">&nbsp;</span>';
+			entry += '<span class="error"> </span>';
 
 		r++;
 	}

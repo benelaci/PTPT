@@ -1,27 +1,27 @@
 @font-face {
-	font-family: 'DIN';
+	font-family: 'DIN 2014';
 	font-weight: 400;
-	src: url('font/DIN2014-Regular.woff');
+	src: url('fonts/DIN2014-Regular.woff');
 }
 @font-face {
-	font-family: 'DIN';
+	font-family: 'DIN 2014';
 	font-weight: 700;
-	src: url('font/DIN2014-Bold.woff');
+	src: url('fonts/DIN2014-Bold.woff');
 }
 @font-face {
 	font-family: 'PF DIN Mono';
 	font-weight: 400;
-	src: url('font/PFDinMono-Regular.woff2');
+	src: url('fonts/PFDinMono-Regular.woff2');
 }
 @font-face {
 	font-family: 'PF DIN Mono';
 	font-weight: 500;
-	src: url('font/PFDinMono-Medium.woff2');
+	src: url('fonts/PFDinMono-Medium.woff2');
 }
 @font-face {
 	font-family: 'PF DIN Mono';
 	font-weight: 700;
-	src: url('font/PFDinMono-Bold.woff2');
+	src: url('fonts/PFDinMono-Bold.woff2');
 }
 
 :root {
@@ -72,10 +72,13 @@ input.invalid {
 	font-weight: 400;
 }
 .entry span {white-space: pre}
+
 .entry .upper {color: #fddc1f}
 .entry .number {color: #66a8ff}
 .entry .symbol {color: #f93}
 .entry .extra {color: #f89}
+.entry .control {color: #f44; font-weight: 500;}
+
 .entry .error {background: #911}
 .entry .slip {background: #3b3d40}
 .entry .error.slip {background: #ae2728}
@@ -107,7 +110,7 @@ td {
 	padding-top: 3px;
 	padding-left: 20px;
 	width: 55px;
-	font: 400 16px 'DIN';
+	font: 400 16px 'DIN 2014';
 	letter-spacing: .25px;
 }
 .bar {
@@ -159,7 +162,7 @@ tr:not(.correct) .hl:hover::after {
 	position: fixed;
 	bottom: 11px;
 	right: 11px;
-	font: 700 42px/.8em 'DIN';
+	font: 700 42px/.8em 'DIN 2014';
 	color: #979ca1;
 	display: flex;
 	gap: 2px;
@@ -228,4 +231,41 @@ tr:not(.correct) .hl:hover::after {
 	width: 50px;
 	color: #84888e;
 	text-align: right;
+}
+
+.download {
+	position: fixed;
+	right: 20px;
+	top: calc( (100vh - 173px) / 2 );
+	font-family: Tahoma;
+	color: #9fa4ab;
+	font-size: 13px;
+	display: flex;
+	flex-direction: column;
+	gap: 9px;
+}
+.download p {
+	margin: 0;
+}
+.download p.version {
+	margin-left: 4px;
+}
+.download a {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: center;
+	text-decoration: none;
+	background: #000;
+	border: solid 2px #7d8086;
+	border-radius: 8px;
+	padding: 8px 8px 7px;
+	color: #DADEE3;
+}
+.download a:hover {
+	background: #6a3638;
+	border-color: #c18f95;
+}
+.download img {
+	width: 56px;
 }

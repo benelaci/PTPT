@@ -1,4 +1,11 @@
+let hasLocalSettings = false;
+
 const
+	cell_debug = 0,
+	keyPress_debug = 0,
+	keyCount_debug = 0,
+	hue_debug = 0,
+
 	// Hue between 0 and 300 is reflected on scoreSimple, but hue up to 340 is allowed
 	// If the upper limit needs to be changed in the future, 340 can be increased, but the ratio value fixed at 300 must not be changed.
 	ratioAt300  = 80, 
@@ -48,6 +55,7 @@ function startInput() {
 
 function keyDown(event) {
 	var key = event.which;
+	const l = inputEl.value.length;
 	inputEl.focus();
 
 	if (
@@ -64,8 +72,10 @@ function keyDown(event) {
 		key==16 ||
 		// alt gr (ctrl->alt)
 		key==17 || key==18 ||
-		// erase
-		key==27 || key==8 ||
+		// clear
+		key==27 || 
+		// control characters
+		key==8 || key==9 ||
 		// character
 		key>=65 && key<=90 || key>=48 && key<=57 || key>=186 && key<=226 || key==32 || key>=96 && key<=111
 	) {
@@ -76,6 +86,7 @@ function keyDown(event) {
 				modifierKey = key;
 				keyCount ++;
 				charKeyCount[length] ++;
+				//console.log('%cmodifier key', 'color:#f10; font-weight:bold', key);
 				// revoke keydown before alt+tab
 				zeroIfEmpty();
 			}
@@ -89,6 +100,8 @@ function keyDown(event) {
 						boxSize = length+1;
 						inputCell.style.width = width();
 					}
+					/*if (charKeyCount[length]==2)
+						console.log('%ctyping', 'color:#f70; font-weight:bold', key);*/
 				break;
 				case 27:
 					inputEl.value='';
@@ -100,17 +113,28 @@ function keyDown(event) {
 					}
 				break;
 				case 8:
-					charKeyCount[length] = 0;
-					charKeyCount[length-1] = 0;
-					if (length == boxSize && boxSize > min_boxSize) {
-						boxSize = length-1;
-						inputCell.style.width = width();
-					}
+					if (l)
+						inputEl.value += inputEl.value[l-1];
+					setTimeout(function() {
+						inputEl.value += String.fromCharCode(8249);
+					}, 1);
+				break;
+				case 9:
+					inputEl.value += String.fromCharCode(8250);
+					setTimeout(function() {
+						inputEl.focus();
+					}, 1);
 				break;
 			}
 		}
 		if (key!=17) prev_keyDown = key; // 17 is the first part of AltGr
 	}
+	else {
+		console.log(key);
+	}
+
+	// DEBUG KEYDOWN
+	if (keyPress_debug) console.log("%cD: "+key, 'color: #4af');
 }
 
 function keyUp(event) {
@@ -123,11 +147,17 @@ function keyUp(event) {
 
 	// avoid keyups after switching back to browster tab
 	zeroIfEmpty();
+
+	// DEBUG KEYUP
+	if (keyPress_debug) console.log("%cU: "+key, 'color: #d7f');
+	// DEBUG KEY COUNT
+	if (keyCount_debug) console.log('charKeyCount', '%c' + charKeyCount +' = '+ charKeyCount.reduce((partialSum, a) => partialSum + a, 0), 'color: #cb8');
 }
 
 function zeroIfEmpty() {
 	if (inputEl && !inputEl.value) {
 		charKeyCount = [0];
+		//console.log('%c[0]', 'color: #04f');
 	}
 
 }
@@ -142,16 +172,29 @@ function finishInput()
 		}, 9);
 		return;
 	}
-
-	const time = Date.now() - timeStart;
+	
+	console.log(hasLocalSettings);
+	
+	var time = Date.now() - timeStart;
+	if (hasLocalSettings && typeof local.roundTimeTo8 == 'function') time = local.roundTimeTo8(time);
 	
 	// iteratively sum up the elements of the array.
 	var keyCount = charKeyCount.reduce((runningSum, current) => runningSum + current, 0); // 0 = runningSum initial value
 	keyCount ++; // enter
 	
+	//console.log(time);
+
 	var ratio = time / keyCount;
 	if (ratio > ratioAt0) ratio = ratioAt0;
 	const scoreSimple = 1 - (ratio - ratioAt300) / (ratioAt0 - ratioAt300); // 0..1
+	//console.log('time',time)
+	//console.log('charKeyCount',charKeyCount)
+	//console.log('keyCount',keyCount)
+	//console.log('ratio',ratio)
+	//console.log('ratio - ratioAt300', ratio - ratioAt300);
+	//console.log('scoreSimple',scoreSimple)
+	//console.log('%c--------','color: #c90');
+	//console.log('%c----', 'color:#6f0')
 	// hue on an arithemtic sequence (sluggish)
 	const Ahue = 300 * scoreSimple;
 	// hue on a geometric sequence (coarse)
@@ -159,12 +202,12 @@ function finishInput()
 	// balanced curve geometrically averaged by 1:4 (A:G)
 	var hue = Math.pow( Math.pow(Ahue, 1) * Math.pow(Ghue, 4), 1/5 );
 
-	// trimming hue on overflow
-	if (hue<1) hue=0; else
-	if (hue>340) hue=340;
-
 	// actual score 
 	const scoreActual = Math.round(hue*5/3); // 100 score per hue hotspot
+
+	// limits on hue
+	if (hue<1) hue=0; else
+	if (hue>340) hue=340;
 
 	// hue rounding
 	hue = Math.round(hue);
@@ -186,7 +229,7 @@ function finishInput()
 
 	for (var i=0; i<inputVal.length; i++)
 	{
-		var a = inputVal.charCodeAt(i);
+		const a = inputVal.charCodeAt(i);
 		/*
 			FORMULA EXPLANATION: 
 			"minimum_exponent" ensures a fairly large number even if "i" is 0
@@ -195,7 +238,10 @@ function finishInput()
 		const sumItem = Math.pow(a, minimum_exponent + i * exponent_increase);
 		sum += sumItem;
 		if (i==inputVal.length-1) {
+			//console.log('sum',sum);
 			sum = Math.floor(sum % 100000);
+			//console.log('sum%',sum);
+			//console.log('----');
 		}
 		
 		if (a>=97 && a<=122)
@@ -204,6 +250,8 @@ function finishInput()
 			cl=['upper'];
 		else if (a>=48 && a<=57)
 			cl=['number'];
+		else if (a==8249 || a==8250)
+			cl=['control'];
 		else if (a>=128)
 			cl=['extra'];
 		else
@@ -336,7 +384,11 @@ function finishInput()
 
 	cell = row.insertCell(-1);
 	cell.className = 'bar';
-	cell.innerHTML = '<div style="width: '+ barWidth +'px; background: hsl('+ hue +' '+ saturation +'% '+ lightness +'%)">'+ scoreActual +'</div>';
+	var hueStr = hue_debug ? '<b>'+hue+'</b> | ' : '';
+	cell.innerHTML = '<div style="width: '+ barWidth +'px; background: hsl('+ hue +' '+ saturation +'% '+ lightness +'%)">'+ hueStr + scoreActual +'</div>';
+
+	if (cell_debug)
+		stressCells(row);
 
 	addInput();
 }
@@ -398,6 +450,20 @@ function removeProofing() {
 	});
 
 	refEntry = null;
+}
+
+String.prototype.replaceAt = function(index, replacement) {
+    return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+}
+
+function stressCells(row) {
+	var cells = row.getElementsByTagName('td');
+	[].forEach.call(cells, function(el) {
+		var color = [];
+		for (var i=0; i<3; i++)
+			color.push(Math.round(Math.random()*128));
+			el.style.background = 'rgb('+color.join(' ')+')';
+	});
 }
 
 function convert(conversions_key, x)
